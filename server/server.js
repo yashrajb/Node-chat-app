@@ -20,7 +20,11 @@ io.on('connection',function(socket){
        createdAt:new Date()
    });
    socket.on('createMessage',function(msg){
-        console.log(msg);
+        io.emit('newMessage',{
+            from:msg.from,
+            text:msg.text,
+            createdAt:new Date().getTime()
+        });
    })
     socket.on('sendEmail',function(email){
         console.log(email);
