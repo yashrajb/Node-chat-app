@@ -7,6 +7,7 @@ var port = process.env.PORT || 3000;
 const publicPath = path.join(__dirname,'../public');
 const server = http.createServer(app);
 var io = socketIO(server);
+const {generateMessages} = require('./utils/message');
 app.use(express.static(publicPath));
 
 io.on('connection',function(socket){
@@ -14,21 +15,18 @@ io.on('connection',function(socket){
     socket.on('disconnect',function(){
         console.log('disconnected');
     });
-   socket.emit('newMessage',{
-       from:'basanyash@gmail.com',
-       text:'Hello bro!',
-       createdAt:new Date()
-   });
+
+    socket.emit('newMessage',generateMessages('admin','welcome user'));
+socket.broadcast.emit('newMessage',generateMessages('admin','new user is joined'));
+
    socket.on('createMessage',function(msg){
-        io.emit('newMessage',{
-            from:msg.from,
-            text:msg.text,
-            createdAt:new Date().getTime()
-        });
-   })
-    socket.on('sendEmail',function(email){
-        console.log(email);
-    })
+       io.emit('newMessage',generateMessages(msg.from,msg.text));
+    // socket.broadcast.emit('newMessage',{
+    //     from:msg.from,
+    //     text:msg.text,
+    //     createdAt:new Date().getTime()
+    // })
+   });
 });
 server.listen(port,function(){
     console.log(`server is started at the ${port}`);

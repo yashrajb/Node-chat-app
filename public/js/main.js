@@ -8,8 +8,3 @@ socket.on('disconnect',function(){
 socket.on('newMessage',function(msg){
     console.log('new message',msg);
 });
-socket.emit('createMessage',{
-    from:'yashraj basan',
-    text:'hello bro!'
-});
-
