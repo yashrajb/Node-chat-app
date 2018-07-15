@@ -7,7 +7,9 @@ var port = process.env.PORT || 3000;
 const publicPath = path.join(__dirname,'../public');
 const server = http.createServer(app);
 var io = socketIO(server);
-const {generateMessages,generateLocationMessages} = require('./utils/message');
+const {generateMessages,
+    generateLocationMessages,
+} = require('./utils/message');
 app.use(express.static(publicPath));
 
 io.on('connection',function(socket){
@@ -26,8 +28,15 @@ socket.broadcast.emit('newMessage',generateMessages('admin','new user is joined'
 
    socket.on('createLocationMessage',function(coords){
        io.emit('newLocationMessage',generateLocationMessages('Admin',coords.latitude,coords.longitude));
+   });
+
+   socket.on('createWeatherMessage',function(msg){
+        io.emit('newWeatherMessage',{
+            from:'user',
+            ...msg
+        });
    })
-   
+
 });
 server.listen(port,function(){
     console.log(`server is started at the ${port}`);
