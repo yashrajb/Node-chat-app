@@ -62,7 +62,7 @@ jQuery('#send-weath').click(function(){
     navigator.geolocation.getCurrentPosition(function(positions){
         var lat = positions.coords.latitude;
         var lon = positions.coords.longitude;
-        axios.get(`http://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=bd9d472d8109b5b0d75782551b2f0890`)
+        axios.get(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=bd9d472d8109b5b0d75782551b2f0890`)
         .then(function(response){
             socket.emit('createWeatherMessage',{
                 main:response.data.weather[0].main,
