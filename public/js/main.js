@@ -39,7 +39,7 @@ jQuery('#send-loc').click(function(){
 
 socket.on('newMessage',function(msg){
     var liElement = jQuery('<li></li>');
-    liElement.text(`${msg.from} ${moment(msg.createdAt).format('h:mm a')}:${msg.text}`);
+    liElement.text(`${msg.from} ${moment(msg.createdAt).format('hh:mm a')}:${msg.text}`);
     $('#all-messages').append(liElement);
 });
 
@@ -47,7 +47,7 @@ socket.on('newLocationMessage',function(msg){
     var liElement = jQuery('<li></li>');
     var anchorElement = jQuery('<a target="_blank">My Location</a>');
     anchorElement.attr("href",msg.url);
-    liElement.text(`${msg.from} ${moment(msg.createdAt).format('h:mm a')}: `);
+    liElement.text(`${msg.from} ${moment(msg.createdAt).format('hh:mm a')}: `);
     liElement.append(anchorElement);
     $('#all-messages').append(liElement);
     jQuery('#send-loc').removeAttr("disabled");
@@ -76,7 +76,7 @@ jQuery('#send-weath').click(function(){
 
 socket.on('newWeatherMessage',function(msg){
     var liElement = $("<li></li>");
-    liElement.text(`${msg.from} ${moment(msg.createdAt).format('h:mm a')}: Here weather is a ${msg.main},${msg.description}`);
+    liElement.text(`${msg.from} ${moment(msg.createdAt).format('hh:mm a')}: Here weather is a ${msg.main},${msg.description}`);
     $('#all-messages').append(liElement);
     $("#send-weath").removeAttr("disabled").text("Send Weather");
 })
