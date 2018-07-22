@@ -18,6 +18,19 @@ var text = jQuery("input[name='message']").val();
     });
 });
 
+function scrollToBottom(){
+    var messages = jQuery("#all-messages");
+    var newMessage = messages.children("li:last-child");
+    var clientHeight = messages.prop("clientHeight");
+    var scrollTop = messages.prop("scrollTop");
+    var scrollHeight = messages.prop("scrollHeight");
+    var newMessageHeight = newMessage.innerHeight();
+    var prevMessage = newMessage.prev().innerHeight();
+    if(clientHeight+scrollTop+newMessageHeight+prevMessage >= scrollHeight){
+        messages.scrollTop(scrollHeight);
+    }
+}
+
 jQuery('#send-loc').click(function(){
     if(!navigator.geolocation){
         return alert("Hey your browser not supports the geolocation")
@@ -38,19 +51,30 @@ jQuery('#send-loc').click(function(){
 })
 
 socket.on('newMessage',function(msg){
-    var liElement = jQuery('<li></li>');
-    liElement.text(`${msg.from} ${moment(msg.createdAt).format('hh:mm a')}:${msg.text}`);
-    $('#all-messages').append(liElement);
+
+    var formatedTime =  moment(msg.createdAt).format('h:mm a');
+    var template = jQuery("#message-template").html();
+    var html = Mustache.render(template,{
+        text:msg.text,
+        createdAt:formatedTime,
+        from:msg.from
+    });
+ $('#all-messages').append(html);
+ scrollToBottom();
 });
 
 socket.on('newLocationMessage',function(msg){
-    var liElement = jQuery('<li></li>');
-    var anchorElement = jQuery('<a target="_blank">My Location</a>');
-    anchorElement.attr("href",msg.url);
-    liElement.text(`${msg.from} ${moment(msg.createdAt).format('hh:mm a')}: `);
-    liElement.append(anchorElement);
-    $('#all-messages').append(liElement);
+    
+    var formatedTime =  moment(msg.createdAt).format('h:mm a');
+    var template = jQuery("#location-message-template").html();
+    var html = Mustache.render(template,{
+        url:msg.url,
+        createdAt:formatedTime,
+        from:msg.from
+    });
+    $('#all-messages').append(html);
     jQuery('#send-loc').removeAttr("disabled");
+    scrollToBottom();
 });
 
 jQuery('#send-weath').click(function(){
@@ -75,11 +99,18 @@ jQuery('#send-weath').click(function(){
 });
 
 socket.on('newWeatherMessage',function(msg){
-    var liElement = $("<li></li>");
-    liElement.text(`${msg.from} ${moment(msg.createdAt).format('hh:mm a')}: Here weather is a ${msg.main},${msg.description}`);
-    $('#all-messages').append(liElement);
+    var formatedTime =  moment(msg.createdAt).format('h:mm a');
+    var template = jQuery("#weather-message-template").html();
+    var html = Mustache.render(template,{
+        main:msg.main,
+        description:msg.description,
+        createdAt:formatedTime,
+        from:msg.from
+    });
+    $("#all-messages").append(html);
     $("#send-weath").removeAttr("disabled").text("Send Weather");
-})
+    scrollToBottom();
+});
 
 
 

@@ -7,6 +7,7 @@ var port = process.env.PORT || 3000;
 const publicPath = path.join(__dirname,'../public');
 const server = http.createServer(app);
 var io = socketIO(server);
+var moment = require('moment');
 const {generateMessages,
     generateLocationMessages,
 } = require('./utils/message');
@@ -33,6 +34,7 @@ socket.broadcast.emit('newMessage',generateMessages('admin','new user is joined'
    socket.on('createWeatherMessage',function(msg){
         io.emit('newWeatherMessage',{
             from:'user',
+            createdAt:moment().valueOf(),
             ...msg
         });
    })
