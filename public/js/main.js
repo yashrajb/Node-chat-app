@@ -1,6 +1,12 @@
 var socket = io();
 socket.on('connect',function(){
-    console.log('connected');
+    var params = jQuery.deparam(window.location.search);
+    socket.emit('join',params,function(err){
+        if(err){
+            alert(err);
+            window.location.href = "/";
+        }
+    });
 });
 socket.on('disconnect',function(){
     console.log('disconnected');
@@ -62,6 +68,10 @@ socket.on('newMessage',function(msg){
  $('#all-messages').append(html);
  scrollToBottom();
 });
+
+socket.on('updateUserList',function(users){
+    console.log('users list',users);
+})
 
 socket.on('newLocationMessage',function(msg){
     
