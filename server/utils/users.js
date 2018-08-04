@@ -18,7 +18,7 @@ class Users {
         var userId = this.getUser(id);
         if(userId){
             this.user = this.user.filter(function(obj){
-             return obj.id !== userId;
+             return obj.id !== userId.id;
             });
         }
         return userId;

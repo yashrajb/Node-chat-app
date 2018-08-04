@@ -70,7 +70,13 @@ socket.on('newMessage',function(msg){
 });
 
 socket.on('updateUserList',function(users){
-    console.log('users list',users);
+    var ol = jQuery("<ol></ol>");
+
+    users.forEach(function(user){
+        ol.append(jQuery("<li></li>").text(user));
+    });
+
+    jQuery("#users").append(ol)
 })
 
 socket.on('newLocationMessage',function(msg){
