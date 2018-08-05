@@ -41,6 +41,15 @@ class Users {
         return nameList;
     }
 
+    validUsername(name,room){
+        var user = this.user.filter(function(obj){
+            return obj.username === name && obj.room === room;
+        });
+       return user;
+    }
+
+    
+
 
 }
 

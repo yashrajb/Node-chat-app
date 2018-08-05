@@ -1,6 +1,7 @@
 var socket = io();
 socket.on('connect',function(){
     var params = jQuery.deparam(window.location.search);
+    params.room = params.room.toLowerCase();
     socket.emit('join',params,function(err){
         if(err){
             alert(err);
@@ -70,14 +71,16 @@ socket.on('newMessage',function(msg){
 });
 
 socket.on('updateUserList',function(users){
+    console.log(users);
     var ol = jQuery("<ol></ol>");
 
     users.forEach(function(user){
         ol.append(jQuery("<li></li>").text(user));
     });
 
-    jQuery("#users").append(ol)
-})
+    jQuery("#users").html(ol)
+});
+
 
 socket.on('newLocationMessage',function(msg){
     
@@ -92,6 +95,8 @@ socket.on('newLocationMessage',function(msg){
     jQuery('#send-loc').removeAttr("disabled");
     scrollToBottom();
 });
+
+
 
 jQuery('#send-weath').click(function(){
 

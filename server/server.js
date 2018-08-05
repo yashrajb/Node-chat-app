@@ -9,8 +9,6 @@ var port = process.env.PORT || 3000;
 const publicPath = path.join(__dirname,'../public');
 const server = http.createServer(app);
 var io = socketIO(server);
-
-
 const {
         generateMessages,
         generateLocationMessages,
@@ -21,12 +19,15 @@ var users = new Users();
 
 app.use(express.static(publicPath));
 
-io.on('connection',function(socket){
+io.on('connection',function(socket){  
     socket.on('join',function(param,callback){
        if(!isRealString(param.username) || !isRealString(param.room)){
          return callback("Please provide proper values for username and room.");
        }
-
+       var validity = users.validUsername(param.username,param.room);
+      if(validity.length > 0){
+        return callback("Username is already exists");
+      }
        socket.join(param.room);
        users.removeUser(socket.id);
        users.addUser(socket.id,param.username,param.room);
@@ -37,12 +38,21 @@ io.on('connection',function(socket){
        callback();
     });
     socket.emit('newMessage',generateMessages('admin','welcome user'));
+    console.log(users.user);
     socket.on('createMessage',function(msg,callback){
-        io.emit('newMessage',generateMessages(msg.from,msg.text));
+        var user = users.getUser(socket.id);
+        if(user && isRealString(msg.text)){
+            io.to(user.room).emit('newMessage',generateMessages(user.username,msg.text));
+        }
         callback('Got it');
     });
     socket.on('createLocationMessage',function(coords){
-        io.emit('newLocationMessage',generateLocationMessages('Admin',coords.latitude,coords.longitude));
+        var user = users.getUser(socket.id);
+        
+    if(user && coords.latitude && coords.longitude){
+        io.to(user.room).emit('newLocationMessage',generateLocationMessages(user.username,coords.latitude,coords.longitude));
+    }
+        
     });
     socket.on('createWeatherMessage',function(msg){
         io.emit('newWeatherMessage',{
@@ -59,7 +69,7 @@ io.on('connection',function(socket){
 
         if(user){
             io.to(user.room).emit("updateUserList",users.getUserList(user.room));
-            io.to(user.room).emit("newMessage",`${user.username} is left`);
+            io.to(user.room).emit("newMessage",generateMessages('Admin',`${user.username} is left`));
         }
     
     });
