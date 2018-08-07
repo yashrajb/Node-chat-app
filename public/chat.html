@@ -13,18 +13,22 @@
             <h3>People</h3>
             <div id="users"></div>
         </div>
+
+        
         <div class="chat__main">
                 <ol id="all-messages" class="chat__messages"></ol>
-                
+                <p class="user-typing"></p>
                 <div class="chat__footer">
+
                         <form id="message-form">
-                                <input type="text" name="message" placeholder="Enter a message..." autocomplete="off" autofocus/>
+                                <input type="text" class="message-input" name="message" placeholder="Enter a message..." autocomplete="off" autofocus/>
                                 <button>Send</button>
                         </form>
                         <button id="send-loc">send location</button>
                         <button id="send-weath">send weather</button>
                 </div>
         </div>
+
         <script id="message-template" type="text/template">
             <li class="message">
                 <div class="message__title">
@@ -78,3 +82,9 @@
         <script src="/js/main.js"></script>
     </body>
 </html>
+
+
+
+
+
+

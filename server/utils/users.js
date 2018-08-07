@@ -45,10 +45,21 @@ class Users {
         var user = this.user.filter(function(obj){
             return obj.username === name && obj.room === room;
         });
-       return user;
+       return user
     }
 
-    
+    activeRooms(){
+        return this.user.map(function(obj){
+            return obj.room;
+        });
+    }
+
+    joinUser(id,username,room){
+            this.removeUser(id);
+            this.addUser(id,username,room);
+            console.log(this.getUser(id));
+
+    }
 
 
 }

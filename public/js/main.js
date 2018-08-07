@@ -1,6 +1,6 @@
 var socket = io();
+var params = jQuery.deparam(window.location.search);
 socket.on('connect',function(){
-    var params = jQuery.deparam(window.location.search);
     params.room = params.room.toLowerCase();
     socket.emit('join',params,function(err){
         if(err){
@@ -25,6 +25,7 @@ var text = jQuery("input[name='message']").val();
     });
 });
 
+ 
 function scrollToBottom(){
     var messages = jQuery("#all-messages");
     var newMessage = messages.children("li:last-child");
@@ -37,6 +38,7 @@ function scrollToBottom(){
         messages.scrollTop(scrollHeight);
     }
 }
+
 
 jQuery('#send-loc').click(function(){
     if(!navigator.geolocation){
@@ -55,10 +57,13 @@ jQuery('#send-loc').click(function(){
         jQuery('#send-loc').removeAttr("disabled",true).text("Send Location");
     });
 
-})
+});
+
+
 
 socket.on('newMessage',function(msg){
 
+    $(".user-typing").text("");
     var formatedTime =  moment(msg.createdAt).format('h:mm a');
     var template = jQuery("#message-template").html();
     var html = Mustache.render(template,{
@@ -71,7 +76,6 @@ socket.on('newMessage',function(msg){
 });
 
 socket.on('updateUserList',function(users){
-    console.log(users);
     var ol = jQuery("<ol></ol>");
 
     users.forEach(function(user){
@@ -135,8 +139,16 @@ socket.on('newWeatherMessage',function(msg){
 
 
 
+var msgInput = jQuery("input[name='message']")[0];
+msgInput.addEventListener("keypress",function(){
+    socket.emit("user-type",params);
+});
 
-   
+socket.on('user-typing-msg',function(msg){
+        $(".user-typing").html(`${msg} is typing....`);
+ });
+
+
 
 
 

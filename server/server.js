@@ -20,7 +20,15 @@ var users = new Users();
 app.use(express.static(publicPath));
 
 io.on('connection',function(socket){  
+io.emit("activeRooms",users.activeRooms());
     socket.on('join',function(param,callback){
+        if(
+          (param.join!=="create_room" && isRealString(param.join) && !isRealString(param.room)) || 
+          (param.join!=="create_room" && isRealString(param.join) && isRealString(param.room))){
+          param.room = param.join;
+        }
+
+
        if(!isRealString(param.username) || !isRealString(param.room)){
          return callback("Please provide proper values for username and room.");
        }
@@ -28,17 +36,16 @@ io.on('connection',function(socket){
       if(validity.length > 0){
         return callback("Username is already exists");
       }
-       socket.join(param.room);
-       users.removeUser(socket.id);
-       users.addUser(socket.id,param.username,param.room);
 
+      socket.join(param.room);
+      users.removeUser(socket.id);
+      users.addUser(socket.id,param.username,param.room);
 
        io.to(param.room).emit("updateUserList",users.getUserList(param.room));
        socket.broadcast.to(param.room).emit('newMessage',generateMessages('admin',`${param.username} is joined`));
        callback();
     });
     socket.emit('newMessage',generateMessages('admin','welcome user'));
-    console.log(users.user);
     socket.on('createMessage',function(msg,callback){
         var user = users.getUser(socket.id);
         if(user && isRealString(msg.text)){
@@ -54,6 +61,7 @@ io.on('connection',function(socket){
     }
         
     });
+
     socket.on('createWeatherMessage',function(msg){
         io.emit('newWeatherMessage',{
             from:'user',
@@ -62,6 +70,9 @@ io.on('connection',function(socket){
         });
    });
 
+  socket.on("user-type",function(params){
+    socket.broadcast.emit('user-typing-msg', params.username);
+  })
 
    socket.on('disconnect',function(){
 
